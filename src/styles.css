@@ -1,0 +1,52 @@
+.container{
+    display: grid;
+    grid-template-columns: 2fr 4fr;
+    height: 100vh;
+
+}
+
+.content-container{
+    background-color: rgb(23, 21, 21);
+    grid-column: 2;
+
+}
+
+.sidebar-container{
+    display: flex;
+    flex-direction: column;
+    background-color: brown;
+}
+
+nav{
+    display: flex;
+    height: 40px;
+    border: 1px solid wheat;
+    align-items: center;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.task.menu{
+    display:flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+button{
+    height: 35px;
+    text-align: left;
+}
+
+.project.title{
+    font-weight: 600;
+}
+
+.title{
+    margin-bottom: 10px;
+}
+
+.content.nav{
+    color:grey;
+    justify-content: right;
+}
