@@ -8,7 +8,71 @@
 .content-container{
     background-color: rgb(23, 21, 21);
     grid-column: 2;
+    display: flex;
+    flex-direction: column;
+}
 
+.content{
+    height: 100%;
+}
+
+#form-container{
+    display: none;
+    position: fixed;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-color: wheat;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(255,255,255,0.2);
+    border-radius: 8px;
+    min-width: 400px;
+}
+
+#task-form{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: none;
+}
+
+#task-info{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: none;
+}
+
+#task-name{
+    height: 35px;
+}
+
+input, textarea, fieldset{
+    border: none;
+    background-color: wheat;
+}
+
+
+.divider{
+    height: 1px;
+    width: 100%;
+    background-color: rgb(4, 4, 4);
+}
+
+#bottom{
+    justify-content: right;
+}
+
+#overlay{
+    display: none;
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index:999;
 }
 
 .sidebar-container{
@@ -26,7 +90,7 @@ nav{
     margin-bottom: 5px;
 }
 
-.task.menu{
+.task-menu{
     display:flex;
     flex-direction: column;
     gap: 5px;
@@ -46,7 +110,22 @@ button{
     margin-bottom: 10px;
 }
 
-.content.nav{
+.content-nav{
     color:grey;
     justify-content: right;
+}
+
+.task{
+    width: 80%;
+    background-color: yellow;
+    display: flex;
+    flex-direction: column;
+    padding: 2px;
+}
+
+.taskDivider{
+    height: 1px;
+    background-color: grey;
+    width: 80%;
+
 }

@@ -1,49 +1,65 @@
-import {format, compareAsc} from "date-fns";
+import { format, compareAsc } from "date-fns";
 
 
-export class Task {
+export function createTask(title, dueDate, description = '', priority = 'normal') {
 
-    constructor(title, dueDate, description='', priority='normal'){
-        this.title = title;
-        this.dueDate = new Date(dueDate);
-        this.description = description;
-        this.priority = priority;
-        this.isComplete = 'false';
+
+    const taskID = generateID();
+
+
+    // Create unique id for task
+    function generateID() {
+        return Date.now() + Math.random().toString(36).substring(2, 9);
     }
 
     // change between complete or incomplete
-    toggleStatus(){
-        this.isComplete = !this.isComplete;
+    const toggleStatus = () => {
+        isComplete = !isComplete;
     }
 
-    isOverdue(){
-        return this.dueDate < new Date();
+    const isOverdue = () => {
+        return dueDate < new Date();
     }
+
+    const setPriority = (newPriority) => {
+        priority = newPriority;
+    }
+
+    return {
+        taskID, title, dueDate, description, priority,
+        isOverdue, setPriority, toggleStatus
+    };
 
 }
 
-export class Project{
-    constructor(title){
-        this.title = title;
-        this.tasks = [];
+export function createProject(title, tasks = new Map()) {
+
+
+    const id = generateID();
+
+
+    function generateID() {
+        return Date.now() + Math.random().toString(36).substring(2, 9);
     }
 
-    get tasks(){
-        return this.tasks;
+    const getTasks = () =>{
+        return tasks;
     }
 
-    addTask(task){
-        this.tasks.push(task);
+    const addTask = (task) => {
+        tasks.set(task.taskID, task);
     }
 
-    removeTask(taskIndex){
-        this.tasks.splice(taskIndex,1);        
+    const removeTask =(taskID) => {
+        tasks.delete(taskID);
     }
 
-    sortTasks(){
-        this.tasks.sort((a,b) => {
-            return compareAsc(a.dueDate, b.dueDate);
-        });
+    // return tasks sorted by date
+    const sortTasksByDate = ()=>{
+        return new Map([...this.tasks.entries()].sort((a, b) =>
+            a[1].date - b[1].date));
     }
-    
+
+    return{id,title, getTasks, addTask, removeTask, sortTasksByDate};
+
 }

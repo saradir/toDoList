@@ -10,8 +10,8 @@
     <div class="container">
         <div class="sidebar-container">
             <nav id="sidebar-nav">Username etc.</nav>
-            <div class="task menu">
-                <button class="title">Add Task</button>
+            <div class="task-menu">
+                <button class="title" id="add-task">Add Task</button>
                 <button>Today</button>
                 <button>Upcoming</button>
             </div>
@@ -23,10 +23,35 @@
 
         </div>
         <div class="content-container">
-            <nav class="content nav">
+            <nav class="content-nav">
                 <button>Settings</button>
             </nav>
-            <div class="content"></div>
+            <div id="content">
+
+                <div id="overlay"></div>
+                <div id="form-container">
+                    <form id="task-form">
+                        <fieldset id="task-info">
+                            <input type="text" id="taskname" name="taskname" placeholder="Task Name" required>
+                            <textarea id="description" name="description" placeholder="Description"></textarea>
+                        </fieldset>
+                        <fieldset id="task-parameters">
+                            <input type="date" id="duedate" name="duedate">
+                            <select id="priority" name="priority">
+                                <option value="-1" disabled selected hidden>Priority</option>
+                                <option value="0">Unimportant</option>
+                                <option value='1'>Normal</option>
+                                <option value="2">Urgent</option>
+                            </select>
+                        </fieldset>
+                        <div class="divider"></div>
+                        <div id="bottom">
+                            <button type="submit">Add</button>
+                            <button type="button" id="closeFormButton">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
     </div>
