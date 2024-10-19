@@ -1,47 +1,62 @@
-function loadAppData() {
-    console.log('loading data');
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+import { createProject, createTask } from "./classes";
+import { defaultSettings } from "./settings";
 
-        if (key.startsWith('app_')) {
-            // Retrieve and parse the item from localStorage
-            const storedData = localStorage.getItem(key);
 
-            try {
-                const project = JSON.parse(storedData);
+export function saveProjectToStorage(project){
+    const projectToSave = {
+        ...project,
+        // convert map to array so it can be serialized
+        tasks: Array.from(project.getTasks())
+    };
+    localStorage.setItem(`project_${projectToSave.id}`, JSON.stringify(projectToSave));
 
-                // Rehydrate tasks
-                const tasks = new Map(
-                    Array.from(Object.entries(project.tasks), ([key, taskData]) => {
+}
 
-                        const task = createTask(taskData.title,
-                            taskData.duedate,
-                            taskData.description,
-                            taskData.priority);
+export function loadProject(key){
+    // Retrieve and parse the item from localStorage
+    const storedData = localStorage.getItem(key);
 
-                        task.id = key;
-                        return[key, task];
-                    })
-                );
-                console.log('tasksrehydrated');
-                const restoredProject = createProject(project.title, tasks);
-                restoredProject.id = project.id;
+    try {
+        const project = JSON.parse(storedData);
 
-                // Assign built-in projects to their variables
-                if (project.id === ALL_TASKS_PROJECT_ID) {
-                    allTasksProject = restoredProject;
+        // Rehydrate tasks
+        const tasks = new Map(
+            project.tasks.map(([key, taskData]) => {
 
-                } else if (project.id === "today-tasks") {
-                    todayTasks = restoredProject;
-                } else {
-                    userProjects.set(restoredProject.id, restoredProject);
-                }
-            } catch (error) {
-                console.error(`Error parsing data for key ${key}:`, error);
-            }
-        }
+            
+                const task = createTask(taskData.title,
+                    taskData.dueDate,
+                    taskData.description,
+                    taskData.priority);
+                
+                task.id = key;
+                return[key, task];
+            })
+        );
+        console.log('tasksrehydrated');
+        const restoredProject = createProject(project.title, tasks);
+        restoredProject.id = project.id;
+        return restoredProject;
+    }catch (error) {
+        console.error(`Error parsing data for key ${key}:`, error);
+    };
+
+}
+
+export function saveSettings(settings){
+    console.log(settings);
+    localStorage.settings = JSON.stringify(settings);
+}
+
+export function loadSettings(){
+    try{
+       const settings = JSON.parse(localStorage.settings);
+       console.log('settings loaded');
+       return settings;
+    } catch(e){
+        console.error("Failed to parse settings",e);
     }
-    console.log('loading complete');
-    return userProjects;
+    return defaultSettings;
+
 
 }

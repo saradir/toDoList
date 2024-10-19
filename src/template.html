@@ -27,7 +27,7 @@
                 <button>Settings</button>
             </nav>
             <div id="content">
-
+                <div id=task-container></div>
                 <div id="overlay"></div>
                 <div id="form-container">
                     <form id="task-form">
@@ -36,7 +36,7 @@
                             <textarea id="description" name="description" placeholder="Description"></textarea>
                         </fieldset>
                         <fieldset id="task-parameters">
-                            <input type="date" id="duedate" name="duedate">
+                            <input type="date" id="duedate" name="duedate" required>
                             <select id="priority" name="priority">
                                 <option value="-1" disabled selected hidden>Priority</option>
                                 <option value="0">Unimportant</option>
