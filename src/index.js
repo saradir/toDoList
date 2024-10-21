@@ -1,38 +1,52 @@
 import "./styles.css"
 import {createTask, createProject, } from "./classes";
-import { showMain, showTasks } from "./main";
-import { showForm, hideForm } from "./DOMController";
+import { showForm, showTasks, hideForms, displayProjectPane, showProject } from "./DOMController";
 import * as Storage from "./storage";
 
-let userProjects = new Map();
-let allTasksProject;
-let todayTasksProject;
-
+const Projects = new Map();
 const settings = Storage.loadSettings();
-
 const ALL_TASKS_PROJECT_ID = 'all-tasks';
 
 
 startApp();
-const taskButton = document.querySelector("#add-task");
-const closeFormButton = document.querySelector("#closeFormButton");
 const overlay = document.querySelector("#overlay");
-taskButton.addEventListener('click', showForm);
-closeFormButton.addEventListener('click', hideForm);
-overlay.addEventListener('click', hideForm);
-document.querySelector('#task-form').addEventListener('submit', handleForm);
+document.querySelector('#add-project').addEventListener('click', () => {showForm('project');});
+document.querySelector("#add-task").addEventListener('click', () => {showForm('task');});
+document.querySelectorAll("#closeFormButton").forEach(button => button.addEventListener('click', hideForms));
+overlay.addEventListener('click', hideForms);
+document.querySelector('#task-form').addEventListener('submit', handleTaskForm);
+document.querySelector('#project-form').addEventListener('submit', handleProjectForm);
+document.querySelector("#settings-button").addEventListener('click', () => {showForm('settings');});
+document.querySelector("#reset-button").addEventListener('click', resetApp);
 
 
-function handleForm(event) {
+function handleTaskForm(event) {
     event.preventDefault();
     const form = event.target;
     const task = createTask(form.taskname.value, form.duedate.value, form.description.value, form.priority.value);
-    allTasksProject.addTask(task);
-    Storage.saveProjectToStorage(allTasksProject);
-    hideForm();
-    showTasks(allTasksProject);
+    Projects.get(ALL_TASKS_PROJECT_ID).addTask(task);
+    Storage.saveProjectToStorage(Projects.get(ALL_TASKS_PROJECT_ID));
+    hideForms();
+    showTasks(Projects.get(ALL_TASKS_PROJECT_ID));
 }
 
+function handleProjectForm(event){
+    event.preventDefault();
+    const form = event.target;
+    const project = createProject(form.projectName.value);
+    console.log(project.title);
+    Storage.saveProjectToStorage(project);
+    Projects.set(project.id, project);
+    console.log(Projects);
+    hideForms();
+    displayProjectPane(Projects);
+}
+
+// this will require some additional work when other setting are added
+function handleSettingsForm(event){
+    event.preventDefault();
+    const form = event.target;
+}
 
 function updateTask(id, updatedTask) {
     const project = getFromLocalStorage(id);
@@ -55,8 +69,8 @@ function startApp() {
         console.log('loading');
         loadAppData();
         console.log('preparing display');
-        showMain();
-        showTasks(allTasksProject);
+        showProject(Projects.get(ALL_TASKS_PROJECT_ID));
+        displayProjectPane(Projects);
         console.log('showing tasks');
     }
 }
@@ -70,14 +84,9 @@ function loadAppData() {
             // Retrieve and parse the item from localStorage
            const project = Storage.loadProject(key);
             console.log('alltasksloaded');
-           if(project.id === ALL_TASKS_PROJECT_ID){
-                allTasksProject = project ;
-           }else {
-            userProjects.set(project.id, project);
+            Projects.set(project.id, project);
            }
         }
-    }
-
     // Load app settings
     Object.assign(settings, Storage.loadSettings);
 }
@@ -85,12 +94,25 @@ function loadAppData() {
 // Build built-in projects if they don't exist
 function initializeProjects() {
     
-    allTasksProject = createProject("All Tasks");
+    const allTasksProject = createProject("All Tasks");
     allTasksProject.id = ALL_TASKS_PROJECT_ID;
+    Projects.set(ALL_TASKS_PROJECT_ID, Projects.get(ALL_TASKS_PROJECT_ID));
+    Storage.saveProjectToStorage(allTasksProject);
 
-    todayTasksProject = createProject("todayTasks");
-    todayTasksProject.id = 'today-tasks';
+   // todayTasksProject = createProject("todayTasks");
+   //    todayTasksProject.id = 'today-tasks';
 
-    console.log('allTasksProjectinitalized');
+    console.log('Projects initalized');
     localStorage.initialized = true;
+}
+
+// Delete all memory and reset settings back to defaults
+function resetApp(){
+
+    const confirmed = confirm("Are you sure you want to reset? This will delete all stored data and reset settings");
+    if(confirmed){
+        localStorage.clear();
+        Object.assign(settings, Storage.loadSettings());
+        startApp();
+    };
 }

@@ -35,7 +35,7 @@ export function createProject(title, tasks = new Map()) {
 
     const id = generateID();
 
-
+    const lastModified = Date.now();
     function generateID() {
         return Date.now() + Math.random().toString(36).substring(2, 9);
     }
@@ -58,6 +58,6 @@ export function createProject(title, tasks = new Map()) {
             a[1].date - b[1].date));
     }
 
-    return{id,title, getTasks, addTask, removeTask, sortTasksByDate};
+    return{id,title, getTasks, addTask, removeTask, sortTasksByDate, lastModified};
 
 }

@@ -15,21 +15,26 @@
                 <button>Today</button>
                 <button>Upcoming</button>
             </div>
-            <div class="project menu">
-                <div class ="project title">My projects</div>
-                <div>Project I</div>
-                <div>Project I</div>
+            <div id = "project-pane" class="project menu">
+                <div class ="project title">My projects
+                    <button id="add-project">New Project</button>
+                </div>
+
+                <div id="project-box"></div>
+
             </div>
 
         </div>
         <div class="content-container">
             <nav class="content-nav">
-                <button>Settings</button>
+                <button id="settings-button">Settings</button>
             </nav>
             <div id="content">
                 <div id=task-container></div>
                 <div id="overlay"></div>
                 <div id="form-container">
+
+                    <!-- New task form  -->
                     <form id="task-form">
                         <fieldset id="task-info">
                             <input type="text" id="taskname" name="taskname" placeholder="Task Name" required>
@@ -50,6 +55,29 @@
                             <button type="button" id="closeFormButton">Close</button>
                         </div>
                     </form>
+
+                    <!-- New project form -->
+                    <form id = "project-form">
+                        <fieldset id="project-info">
+                            <input type="text" id="projectName" name="projectName" placeholder="Project Name" required>
+                        </fieldset>
+                        <div class="divider"></div>
+                        <div id="project-bottom">
+                            <button type="submit">Add</button>
+                            <button type="button" id="closeFormButton">Close</button>
+                        </div>
+                    </form>
+
+                    <!-- Settings menu-->
+                     <form id = "settings-form">
+                        <button type="button" id="reset-button" name="">Reset App</button>
+                        <div class="divider"></div>
+                        <div id="settings-bottom">
+                            <button type="submit">Apply</button>
+                            <button type="button" id="closeFormButton">Close</button>
+                        </div>
+                     </form>
+
                 </div>
             </div>
         </div>
