@@ -106,7 +106,7 @@ button{
     text-align: left;
 }
 
-.project.title{
+.project-title{
     padding: 5px;
     font-weight: 600;
     display: flex;
@@ -138,3 +138,23 @@ button{
 
 }
 
+#project-box{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.project{
+    display:flex;
+    width: 100%;
+    height: 30px;
+    background-color: white;
+    border: 1px solid black;
+    padding: 2px;
+    align-items: center;
+}
+
+#project-title{
+    color: beige;
+    padding-left: 50px;
+}

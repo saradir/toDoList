@@ -1,8 +1,9 @@
 
-export function createTask(title, dueDate, description = '', priority = 'normal') {
+export function createTask(title, dueDate, description = '', priority = 'normal', project = '') {
 
-
+    dueDate = new Date(dueDate);
     const taskID = generateID();
+    let isComplete = false;
 
 
     // Create unique id for task
@@ -24,7 +25,7 @@ export function createTask(title, dueDate, description = '', priority = 'normal'
     }
 
     return {
-        taskID, title, dueDate, description, priority,
+        taskID, title, dueDate, description, priority, project,
         isOverdue, setPriority, toggleStatus
     };
 
@@ -46,6 +47,7 @@ export function createProject(title, tasks = new Map()) {
 
     const addTask = (task) => {
         tasks.set(task.taskID, task);
+        tasks = sortTasksByDate();
     }
 
     const removeTask =(taskID) => {
@@ -53,9 +55,9 @@ export function createProject(title, tasks = new Map()) {
     }
 
     // return tasks sorted by date
-    const sortTasksByDate = ()=>{
-        return new Map([...this.tasks.entries()].sort((a, b) =>
-            a[1].date - b[1].date));
+    function sortTasksByDate(){
+        return new Map([...tasks.entries()].sort((a, b) =>
+            a[1].dueDate - b[1].dueDate));
     }
 
     return{id,title, getTasks, addTask, removeTask, sortTasksByDate, lastModified};

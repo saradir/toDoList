@@ -27,16 +27,19 @@ export function displayProjectPane(Projects){
 
     const projectBox = document.querySelector('#project-box');
     projectBox.innerHTML = '';
-    const userProjects = Array.from(Projects.values()).slice(1,);  //use slice to skip built-in projects
-    console.log(userProjects);
+    const userProjects = Array.from(Projects.values());
+    let numProjects = 0;
     
     for(let i = 0; i < userProjects.length ; i++){
 
         // display only 5 projects
-        if(i >= 5){
+        if(numProjects >= 6){
             break;
         }
         const project = userProjects[i];
+        if(project.title === "All Tasks" || project.title=== "Today"){
+            continue;
+        }
         console.log(project);
         const projectDiv = document.createElement('div');
         const projectName = document.createElement('div');
@@ -47,6 +50,7 @@ export function displayProjectPane(Projects){
 
         projectDiv.appendChild(projectName);
         projectBox.appendChild(projectDiv);
+        numProjects+= 1;
 
     }
 
@@ -84,7 +88,8 @@ export function showTasks(project){
 
         title.textContent = task.title;
         description.textContent = task.description;
-        duedate.textContent = task.dueDate;
+        console.log(task.dueDate);
+        duedate.textContent = task.dueDate.toISOString().slice(0,10); // get date in YYYY-MM-DD format
         duedate.id = 'duedate';
 
         taskDiv.appendChild(title);
@@ -98,11 +103,10 @@ export function showTasks(project){
 }
 
 export function showProject(project){
-    const contentElement = document.querySelector("#content");
-    const title = document.createElement("h2");
-    title.className = 'project title';
+    console.log(project);
+    const title = document.querySelector("#project-title");
+  
 
     title.textContent = project.title;
-    contentElement.appendChild(title);
     showTasks(project);   
 }

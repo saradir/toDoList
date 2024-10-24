@@ -6,6 +6,7 @@ import * as Storage from "./storage";
 const Projects = new Map();
 const settings = Storage.loadSettings();
 const ALL_TASKS_PROJECT_ID = 'all-tasks';
+let currentProject; // Tracks the current project on display. Mainly used for the global "add task" button.
 
 
 startApp();
@@ -18,16 +19,34 @@ document.querySelector('#task-form').addEventListener('submit', handleTaskForm);
 document.querySelector('#project-form').addEventListener('submit', handleProjectForm);
 document.querySelector("#settings-button").addEventListener('click', () => {showForm('settings');});
 document.querySelector("#reset-button").addEventListener('click', resetApp);
+document.querySelector("#project-box").addEventListener('click', handleProjectClick);
 
+// Handle what happens when user clicks on a project in the project pane
+function handleProjectClick(event){
+    console.log('clicked!');
+    // make sure the current div is selected and not a child div
+    try {
+        const project = event.target.classList.contains('project')? event.target : event.target.closest('.project');
+        currentProject = Projects.get(project.id)
+        showProject(currentProject);
+    } catch (error) {
+        console.log('you missed!');
+    }
+}
 
 function handleTaskForm(event) {
     event.preventDefault();
     const form = event.target;
-    const task = createTask(form.taskname.value, form.duedate.value, form.description.value, form.priority.value);
+    const task = createTask(form.taskname.value, form.duedate.value, form.description.value, form.priority.value, currentProject);
+    console.log(task.dueDate instanceof Date); 
+    console.log(task.dueDate);
+    // add the task to current project AND "ALL TASKS" project.
+    currentProject.addTask(task);
     Projects.get(ALL_TASKS_PROJECT_ID).addTask(task);
     Storage.saveProjectToStorage(Projects.get(ALL_TASKS_PROJECT_ID));
+    Storage.saveProjectToStorage(currentProject);
     hideForms();
-    showTasks(Projects.get(ALL_TASKS_PROJECT_ID));
+    showTasks(currentProject);
 }
 
 function handleProjectForm(event){
@@ -69,7 +88,8 @@ function startApp() {
         console.log('loading');
         loadAppData();
         console.log('preparing display');
-        showProject(Projects.get(ALL_TASKS_PROJECT_ID));
+        currentProject = Projects.get(ALL_TASKS_PROJECT_ID);
+        showProject(currentProject);
         displayProjectPane(Projects);
         console.log('showing tasks');
     }
