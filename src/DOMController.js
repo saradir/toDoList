@@ -80,25 +80,69 @@ export function showTasks(project){
         const taskDiv = document.createElement('div');
         taskDiv.className = "task";
         taskDiv.dataset.taskID = taskID;
+
+        // Head of task element
+        const taskHead = document.createElement('div');
+        taskHead.className = 'taskHead';
+
         const title = document.createElement('div');
-        const description = document.createElement('div');
-        const divider = document.createElement('div');
+        title.textContent = task.title;
+        title.className = 'taskTitle';
+
         const duedate = document.createElement('div');
+        duedate.textContent = task.dueDate.toISOString().slice(0,10); // get date in YYYY-MM-DD format
+        duedate.className = 'duedate';
+
+
+        const markComplete = document.createElement('button');
+        markComplete.textContent = task.isComplete ? "Mark Unfinished" : "Mark Complete";
+        markComplete.className = 'markCompleteButton';
+
+        //  Body of task element
+        const taskBody = document.createElement('div');
+        taskBody.className = "taskBody";
+
+        const description = document.createElement('div');
+        description.textContent = task.description;
+        description.className = "taskDescription";
+        taskBody.style.display = "none";
+
+
+        // Bottom of task element
+
+        const taskBottom = document.createElement('div');
+        taskBottom.className = 'taskBottom';
+
+        const editTaskButton = document.createElement('button');
+        editTaskButton.id ="editTaskButton";
+        editTaskButton.textContent = 'Edit Task';
+        
+        const deleteTaskButton = document.createElement('button');
+        deleteTaskButton.id = 'deleteTaskButton';
+        deleteTaskButton.textContent = 'Delete';
+
+
+        const divider = document.createElement('div');
         divider.className = "taskDivider";
 
-        title.textContent = task.title;
-        description.textContent = task.description;
-        console.log(task.dueDate);
-        duedate.textContent = task.dueDate.toISOString().slice(0,10); // get date in YYYY-MM-DD format
-        duedate.id = 'duedate';
 
-        taskDiv.appendChild(title);
-        taskDiv.appendChild(description);
-        taskDiv.appendChild(duedate);
+        taskHead.appendChild(title);
+        taskHead.appendChild(duedate);
+        taskHead.appendChild(markComplete);
+
+        taskBody.appendChild(description);
+
+
+        taskBottom.appendChild(editTaskButton);
+        taskBottom.appendChild(deleteTaskButton);
+
+        taskBody.appendChild(taskBottom);
+        taskDiv.appendChild(taskHead);
+        taskDiv.appendChild(taskBody);
         taskContainer.appendChild(taskDiv);
         taskContainer.appendChild(divider);
         contentElement.appendChild(taskContainer);
-
+        
         });
 }
 

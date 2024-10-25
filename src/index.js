@@ -20,7 +20,17 @@ document.querySelector('#project-form').addEventListener('submit', handleProject
 document.querySelector("#settings-button").addEventListener('click', () => {showForm('settings');});
 document.querySelector("#reset-button").addEventListener('click', resetApp);
 document.querySelector("#project-box").addEventListener('click', handleProjectClick);
+document.querySelectorAll('.taskHead').forEach(taskHead => taskHead.addEventListener('click', expandTask));
 
+
+// Expand/collapse task window when title is clicked
+function expandTask(event){
+
+    const taskBody = event.currentTarget.parentNode.querySelector(".taskBody");
+    if(taskBody.style.display === "none"){
+        taskBody.style.display = "flex";
+    } else{taskBody.style.display = "none"};
+}
 // Handle what happens when user clicks on a project in the project pane
 function handleProjectClick(event){
     console.log('clicked!');

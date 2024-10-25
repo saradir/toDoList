@@ -125,10 +125,37 @@ button{
 
 .task{
     width: 80%;
-    background-color: yellow;
+    background-color: whitesmoke;
     display: flex;
     flex-direction: column;
     padding: 2px;
+    gap: 1px;
+}
+
+.taskHead{
+    display: flex;
+    gap: 5px;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid black;
+    padding: 2px;
+    background-color: white;
+}
+
+.taskBody{
+    display: flex;
+    flex-direction: column;
+    min-height: 10px;
+    border: 1px solid black;
+    padding: 2px;
+    background-color: white;
+    
+}
+
+.taskBottom{
+    display: flex;
+    justify-content: end;
+    gap: 5px;
 }
 
 .taskDivider{
