@@ -6,9 +6,11 @@ export function showForm(form) {
     const formToDisplay = document.querySelector(`#${form}-form`);
     const formContainer = document.querySelector('#form-container');
 
+
     formContainer.style.display = "block";
     formToDisplay.style.display = "flex";
     document.querySelector("#overlay").style.display = 'block';
+    return formToDisplay;
 }
 
 // hide  form
@@ -16,6 +18,7 @@ export function hideForms() {
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.style.display = 'none';
+        form.dataset.taskId = "";
         form.reset();
     });
     document.querySelector("#form-container").style.display = "none";
@@ -114,11 +117,11 @@ export function showTasks(project){
         taskBottom.className = 'taskBottom';
 
         const editTaskButton = document.createElement('button');
-        editTaskButton.id ="editTaskButton";
+        editTaskButton.className ="editTaskButton";
         editTaskButton.textContent = 'Edit Task';
         
         const deleteTaskButton = document.createElement('button');
-        deleteTaskButton.id = 'deleteTaskButton';
+        deleteTaskButton.className = 'deleteTaskButton';
         deleteTaskButton.textContent = 'Delete';
 
 
@@ -153,4 +156,23 @@ export function showProject(project){
 
     title.textContent = project.title;
     showTasks(project);   
+
+}
+
+export function openUpdateTaskForm(task){
+    const form = showForm('task');
+    form.querySelector('button[type="submit"]').textContent = "Save";
+    form.taskname.value = task.title;
+    form.duedate.value = task.dueDate.toISOString().slice(0,10);
+    form.description.value = task.description;
+    form.priority.value = task.priority;
+    form.dataset.mode = 'update';
+    form.dataset.taskID = task.taskID;
+}
+
+export function openAddTaskForm(){
+    const form = showForm('task');
+    form.querySelector('button[type="submit"]').textContent = "Add";
+    form.dataset.mode = "add";
+    form.dataset.taskID = '';
 }
