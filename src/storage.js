@@ -29,9 +29,10 @@ export function loadProject(key){
                 const task = createTask(taskData.title,
                     taskData.dueDate,
                     taskData.description,
-                    taskData.priority);
+                    taskData.priority,
+                    taskData.projectID);
                 
-                task.id = key;
+                task.taskID = key;
                 return[key, task];
             })
         );

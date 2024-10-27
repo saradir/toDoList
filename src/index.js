@@ -3,8 +3,10 @@ import {createTask, createProject, } from "./classes";
 import { showForm, hideForms, displayProjectPane, showProject, openUpdateTaskForm, openAddTaskForm } from "./DOMController";
 import * as Storage from "./storage";
 
-const Projects = new Map();
+const Projects = new Map();  // Stores all projects
+const Tasks = new Map();     // Stores all tasks
 const settings = Storage.loadSettings();
+
 const ALL_TASKS_PROJECT_ID = 'all-tasks';
 let currentProject; // Tracks the current project on display. Mainly used for the global "add task" button.
 
@@ -20,8 +22,8 @@ document.querySelector('#project-form').addEventListener('submit', handleProject
 document.querySelector("#settings-button").addEventListener('click', () => {showForm('settings');});
 document.querySelector("#reset-button").addEventListener('click', resetApp);
 document.querySelector("#project-box").addEventListener('click', handleProjectClick);
-document.querySelector('#todayButton').addEventListener('click', () => {showToday(Projects.get(ALL_TASKS_PROJECT_ID).getTasks());});
-document.querySelector('#upcomingButton').addEventListener('click', () => {showUpcoming(Projects.get(ALL_TASKS_PROJECT_ID).getTasks());});
+document.querySelector('#todayButton').addEventListener('click', () => {showToday(Tasks);});
+document.querySelector('#upcomingButton').addEventListener('click', () => {showUpcoming(Tasks);});
 
 
 
@@ -61,23 +63,24 @@ function handleTaskForm(event) {
 
     // Create new task
     if(form.dataset.mode === "add"){
-        const task = createTask(form.taskname.value, form.duedate.value, form.description.value, form.priority.value, currentProject);
+        const task = createTask(form.taskname.value, form.duedate.value, form.description.value, form.priority.value, currentProject.id);
         // add the task to current project AND "ALL TASKS" project.
          currentProject.addTask(task);
-         Projects.get(ALL_TASKS_PROJECT_ID).addTask(task);
+         Tasks.set(task.id, task);
+        // Projects.get(ALL_TASKS_PROJECT_ID).addTask(task);
     
     // Update given task
     }else if(form.dataset.mode === "update"){
         console.log(currentProject.getTasks());
         console.log(form.dataset.taskID);
-        const task = currentProject.getTasks().get(form.dataset.taskID);
-
+        console.log(form.dataset.projectID);
+        const task = Projects.get(form.dataset.projectID).getTasks().get(form.dataset.taskID);
         task.title = form.taskname.value;
         task.dueDate = new Date(form.duedate.value);
         task.description = form.description.value;
         task.priority = form.priority.value;
     };
-    Storage.saveProjectToStorage(Projects.get(ALL_TASKS_PROJECT_ID));
+    //Storage.saveProjectToStorage(Projects.get(ALL_TASKS_PROJECT_ID));
     Storage.saveProjectToStorage(currentProject);
     hideForms();
     showProjectAndAttachListeners(currentProject);
@@ -87,10 +90,10 @@ function handleProjectForm(event){
     event.preventDefault();
     const form = event.target;
     const project = createProject(form.projectName.value);
-    console.log(project.title);
     Storage.saveProjectToStorage(project);
     Projects.set(project.id, project);
-    console.log(Projects);
+    currentProject = project;
+    showProject(currentProject);
     hideForms();
     displayProjectPane(Projects);
 }
@@ -122,8 +125,8 @@ function startApp() {
         console.log('loading');
         loadAppData();
         console.log('preparing display');
-        currentProject = Projects.get(ALL_TASKS_PROJECT_ID);
-        showProjectAndAttachListeners(currentProject);
+        //currentProject = Projects.get(ALL_TASKS_PROJECT_ID);
+        //showProjectAndAttachListeners(currentProject);
         displayProjectPane(Projects);
         console.log('showing tasks');
     }
@@ -137,21 +140,25 @@ function loadAppData() {
         if (key.startsWith('project_')) {
             // Retrieve and parse the item from localStorage
            const project = Storage.loadProject(key);
-            console.log('alltasksloaded');
+           // save project and tasks in app's maps
             Projects.set(project.id, project);
+            const tasks = project.getTasks();
+            tasks.forEach((task, id) => {
+                Tasks.set(id, task);
+            });
            }
         }
     // Load app settings
-    Object.assign(settings, Storage.loadSettings);
+    Object.assign(settings, Storage.loadSettings());
 }
 
 // Build built-in projects if they don't exist
 function initializeProjects() {
     
-    const allTasksProject = createProject("All Tasks");
-    allTasksProject.id = ALL_TASKS_PROJECT_ID;
-    Projects.set(ALL_TASKS_PROJECT_ID, Projects.get(ALL_TASKS_PROJECT_ID));
-    Storage.saveProjectToStorage(allTasksProject);
+    //const allTasksProject = createProject("All Tasks");
+    //allTasksProject.id = ALL_TASKS_PROJECT_ID;
+   // Projects.set(ALL_TASKS_PROJECT_ID, Projects.get(ALL_TASKS_PROJECT_ID));
+    //Storage.saveProjectToStorage(allTasksProject);
 
    // todayTasksProject = createProject("todayTasks");
    //    todayTasksProject.id = 'today-tasks';
@@ -179,8 +186,9 @@ function showToday(tasks){
     tasks = Array.from(tasks.values()).filter(task => {
         return (task.dueDate <= dateToday && !(task.isComplete));
         });
-    
-    const today = createProject('Today', tasks);
+
+    const tasksMap = new Map(tasks.map(task => [task.taskID, task]));
+    const today = createProject('Today', tasksMap);
     showProjectAndAttachListeners(today);
 }
 
@@ -191,8 +199,8 @@ function showUpcoming(tasks){
     tasks = Array.from(tasks.values()).filter(task =>{
         return task.dueDate > dateToday && !(task.isComplete);
     });
-
-    const upcoming = createProject('Upcoming Tasks', tasks);
+    const tasksMap = new Map(tasks.map(task => [task.taskID, task]));
+    const upcoming = createProject('Upcoming Tasks', tasksMap);
     showProjectAndAttachListeners(upcoming);
 }
 
@@ -223,16 +231,22 @@ function changeTaskStatus(e){
 function deleteTask(e){
     console.log('delete button clicked');
     const taskDiv = e.currentTarget.closest('.task');
-    currentProject.removeTask(taskDiv.dataset.taskID);
+    const project = Projects.get(taskDiv.projectID);
+    project.removeTask(taskDiv.dataset.taskID);
+    //Projects.get(ALL_TASKS_PROJECT_ID).removeTask;
     Storage.saveProjectToStorage(currentProject);
     showProjectAndAttachListeners(currentProject);
 }
 
 function editTask(e){
     console.log('edit button clicked');
-
+ 
     const taskDiv = e.target.closest('.task');
-    const task = currentProject.getTasks().get(taskDiv.dataset.taskID);
+    console.log(taskDiv);
+    const project = Projects.get(taskDiv.dataset.projectID);
+    console.log(project);
+    const task = project.getTasks().get(taskDiv.dataset.taskID);
+    console.log(task);
     openUpdateTaskForm(task);
 
 }

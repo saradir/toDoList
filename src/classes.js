@@ -1,5 +1,5 @@
 
-export function createTask(title, dueDate, description = '', priority = 'normal', project = '') {
+export function createTask(title, dueDate, description = '', priority = 'normal', projectID = '') {
 
     dueDate = new Date(dueDate);
     const taskID = generateID();
@@ -25,7 +25,7 @@ export function createTask(title, dueDate, description = '', priority = 'normal'
     }
 
     return {
-        taskID, title, dueDate, description, priority, project,
+        taskID, title, dueDate, description, priority, projectID,
         isOverdue, setPriority, toggleStatus
     };
 

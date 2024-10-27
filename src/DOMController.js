@@ -83,6 +83,7 @@ export function showTasks(project){
         const taskDiv = document.createElement('div');
         taskDiv.className = "task";
         taskDiv.dataset.taskID = taskID;
+        taskDiv.dataset.projectID = task.projectID;
 
         // Head of task element
         const taskHead = document.createElement('div');
@@ -168,6 +169,7 @@ export function openUpdateTaskForm(task){
     form.priority.value = task.priority;
     form.dataset.mode = 'update';
     form.dataset.taskID = task.taskID;
+    form.dataset.projectID = task.projectID;
 }
 
 export function openAddTaskForm(){
