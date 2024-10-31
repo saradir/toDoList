@@ -1,13 +1,11 @@
 import "./styles.css"
 import {createTask, createProject, } from "./classes";
-import { showForm, hideForms, displayProjectPane, showProject, openUpdateTaskForm, openAddTaskForm } from "./DOMController";
+import { showForm, hideForms, displayProjectPane, showProject, showTasks, openUpdateTaskForm, openAddTaskForm, showView } from "./DOMController";
 import * as Storage from "./storage";
 
 const Projects = new Map();  // Stores all projects
 const Tasks = new Map();     // Stores all tasks
 const settings = Storage.loadSettings();
-
-const ALL_TASKS_PROJECT_ID = 'all-tasks';
 let currentProject; // Tracks the current project on display. Mainly used for the global "add task" button.
 
 
@@ -66,24 +64,25 @@ function handleTaskForm(event) {
         const task = createTask(form.taskname.value, form.duedate.value, form.description.value, form.priority.value, currentProject.id);
         // add the task to current project AND "ALL TASKS" project.
          currentProject.addTask(task);
-         Tasks.set(task.id, task);
-        // Projects.get(ALL_TASKS_PROJECT_ID).addTask(task);
+         Tasks.set(task.taskID, task);
+         console.log(Tasks);
+         Storage.saveProjectToStorage(currentProject);
+         showProjectAndAttachListeners(currentProject);
+
     
     // Update given task
     }else if(form.dataset.mode === "update"){
-        console.log(currentProject.getTasks());
-        console.log(form.dataset.taskID);
-        console.log(form.dataset.projectID);
-        const task = Projects.get(form.dataset.projectID).getTasks().get(form.dataset.taskID);
+        const project = Projects.get(form.dataset.projectID);
+        const task = project.getTasks().get(form.dataset.taskID);
         task.title = form.taskname.value;
         task.dueDate = new Date(form.duedate.value);
         task.description = form.description.value;
         task.priority = form.priority.value;
-    };
-    //Storage.saveProjectToStorage(Projects.get(ALL_TASKS_PROJECT_ID));
-    Storage.saveProjectToStorage(currentProject);
+        Storage.saveProjectToStorage(project);
+        showProjectAndAttachListeners(project);
+
+    }; 
     hideForms();
-    showProjectAndAttachListeners(currentProject);
 }
 
 function handleProjectForm(event){
@@ -178,7 +177,7 @@ function resetApp(){
     };
 }
 
-// build the Today task window
+// build the Today task view
 function showToday(tasks){
 
 
@@ -188,8 +187,10 @@ function showToday(tasks){
         });
 
     const tasksMap = new Map(tasks.map(task => [task.taskID, task]));
-    const today = createProject('Today', tasksMap);
-    showProjectAndAttachListeners(today);
+    showView(tasksMap,'Today');
+    attachTaskListeners();
+    currentProject = 'today';
+
 }
 
 
@@ -200,8 +201,9 @@ function showUpcoming(tasks){
         return task.dueDate > dateToday && !(task.isComplete);
     });
     const tasksMap = new Map(tasks.map(task => [task.taskID, task]));
-    const upcoming = createProject('Upcoming Tasks', tasksMap);
-    showProjectAndAttachListeners(upcoming);
+    showView(tasksMap,'Upcoming');
+    attachTaskListeners();
+    currentProject = 'upcoming';
 }
 
 // attach all the various listeners to the task elements
@@ -215,12 +217,19 @@ function attachTaskListeners(){
 
 // This is just a wrapper function to ensure both functions are always called together
 function showProjectAndAttachListeners(project){
-    showProject(project);
+    console.log('showing project');
+    if(project ==="today"){
+        showToday(Tasks);
+        console.log('displaying today');
+        
+    }else if(project === "upcoming"){
+        showUpcoming(Tasks);
+    }else{showProject(project);
+    }
     attachTaskListeners();
 }
 
 function changeTaskStatus(e){
-    console.log('toggle status clicked');
     const taskDiv = e.currentTarget.closest('.task');
     const task =  currentProject.getTasks().get(taskDiv.dataset.taskID);
     task.isComplete = !task.isComplete;
@@ -229,12 +238,14 @@ function changeTaskStatus(e){
 
 
 function deleteTask(e){
-    console.log('delete button clicked');
     const taskDiv = e.currentTarget.closest('.task');
-    const project = Projects.get(taskDiv.projectID);
+    const project = Projects.get(taskDiv.dataset.projectID);
     project.removeTask(taskDiv.dataset.taskID);
-    //Projects.get(ALL_TASKS_PROJECT_ID).removeTask;
-    Storage.saveProjectToStorage(currentProject);
+    Tasks.delete(taskDiv.dataset.taskID);
+
+
+    // save the original project but display current project/view (in case current project is "today" or "upcoming")
+    Storage.saveProjectToStorage(project);
     showProjectAndAttachListeners(currentProject);
 }
 

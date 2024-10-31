@@ -59,19 +59,19 @@ export function displayProjectPane(Projects){
 
 }
 
-export function showTasks(project){
+export function showTasks(tasks){
     
     const contentElement = document.querySelector("#content");
     const taskContainer = document.querySelector('#task-container');
     taskContainer.innerHTML='';
     
 
-    if (!project) {
-        console.log("Project is undefined or null.");
-        return;
-    }
+    //if (!project) {
+      //  console.log("Project is undefined or null.");
+     //   return;
+   // }
 
-    const tasks = project.getTasks();
+   // const tasks = project.getTasks();
     if (!tasks || tasks.length === 0) {
         console.log("No tasks found.");
         return;
@@ -156,8 +156,14 @@ export function showProject(project){
   
 
     title.textContent = project.title;
-    showTasks(project);   
+    showTasks(project.getTasks());   
 
+}
+
+export function showView(tasks, viewName){
+    const title = document.querySelector("#project-title");
+    title.textContent = viewName;
+    showTasks(tasks);
 }
 
 export function openUpdateTaskForm(task){

@@ -35,6 +35,7 @@ export function createProject(title, tasks = new Map()) {
 
 
     const id = generateID();
+    
 
     const lastModified = Date.now();
     function generateID() {
